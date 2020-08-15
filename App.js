@@ -1,7 +1,12 @@
 import React from 'react'
-import {View, Text, DrawerLayoutAndroid, TextInput, Button, TouchableHighlight} from 'react-native';
+import {View, Text, DrawerLayoutAndroid, TextInput, Button, TouchableHighlight, SafeAreaView} from 'react-native';
 import MainScreen from './src/MainScreen';
 import {Icon} from 'react-native-elements';
+import {Label} from './src/Label';
+import {Switch} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+const Stack = createStackNavigator();
 
 class App extends React.Component {
     constructor(props) {
@@ -16,45 +21,26 @@ class App extends React.Component {
         const navigationView = (
             <View style={{paddingVertical: 40}}>
 
+                <Label name={"Работа"} />
+                <Label name={"Спорт"} />
+
                 <View style={{flexDirection: 'row', width: 300}}>
                     <View style={{marginHorizontal: 5}}/>
-                    <TouchableHighlight>
-                    <View style={{width: 250, borderWidth: 1, alignItems: 'center'}}>
-                        <Text>Работа</Text>
+                    <View style={{flexDirection: 'row'}}>
+
+                        <TextInput style={{width: 240, height: 34, borderWidth: 1}} placeholder={"напишите что нибудь ... "}/>
+
+                        <View style={{marginHorizontal: 5}}/>
+                        <Icon
+                            size={30}
+                            name='plus-square'
+                            type='feather'
+                            color='green'
+                            onPress={() => console.log("press")} />
                     </View>
-                    </TouchableHighlight>
-                    <View style={{marginHorizontal: 5}}/>
-                    <Icon
-                        name='trash-2'
-                        type='feather'
-                        color='red'
-                        onPress={() => console.log("press")} />
                     <View style={{marginHorizontal: 5}}/>
                 </View>
-                <View style={{marginVertical: 5}}/>
-                <View style={{flexDirection: 'row', width: 300}}>
-                    <View style={{marginHorizontal: 5}}/>
-                <TouchableHighlight>
-                    <View style={{width: 250, borderWidth: 1, alignItems: 'center'}}>
-                        <Text>Спорт</Text>
-                    </View>
-                </TouchableHighlight>
-                    <View style={{marginHorizontal: 5}}/>
-                    <Icon
-                        name='trash-2'
-                        type='feather'
-                        color='red'
-                        onPress={() => console.log("press")} />
-                    <View style={{marginHorizontal: 5}}/>
-                </View>
-                <View style={{marginVertical: 5}}/>
-                <View style={{flexDirection: 'row', width: 300, justifyContent: 'center'}}>
-                    <Icon
-                        name='plus-square'
-                        type='feather'
-                        color='green'
-                        onPress={() => console.log("press")} />
-                </View>
+
             </View>
         );
         return (

@@ -1,7 +1,7 @@
 import React from 'react'
 import {Header, Icon} from 'react-native-elements';
 import {CalendarList, LocaleConfig} from 'react-native-calendars';
-import {View, Modal, StyleSheet, TextInput, Text, DrawerLayoutAndroid} from 'react-native';
+import {View, Modal, StyleSheet, TextInput, Text, DrawerLayoutAndroid, Button} from 'react-native';
 import { DateTime } from "luxon";
 
 LocaleConfig.locales['fr'] = {
@@ -19,62 +19,23 @@ class MainScreen extends React.Component {
         this.state = {
             modalVisible: false,
             month: "",
+            editMode: false,
             visibleCheckButton: false,
             visibleResetButton: false,
+            tempDates: [],
             dates: {},
-            countMonth: 12
+            countMonth: 12,
+            selectedDate: false
         }
         this.setModalVisible = this.setModalVisible.bind(this)
         this.getMonthName = this.getMonthName.bind(this)
+        this.setEditMode = this.setEditMode.bind(this)
+        this.setCountMonthVisible = this.setCountMonthVisible.bind(this)
+        this.setDates = this.setDates.bind(this)
     }
 
     setModalVisible = (visible, day) => {
         this.setState({ modalVisible: visible , month: this.getMonthName(day.month), day: day.day, year: day.year});
-    }
-
-    componentDidMount() {
-        let date = [
-        ]
-
-        let now = '2020-08-10'
-        let endDate = JSON.stringify(DateTime.fromISO(JSON.stringify(now).substr(1, 10)).plus({month: 12}).toISODate()).substr(1, 10)
-        let curDateISO, curDate
-        let j = 0
-        while(curDate !== endDate){
-            if(j === 0){
-                curDate = JSON.stringify(now).substr(1, 10)
-                j++
-            }else{
-                curDateISO = DateTime.fromISO(JSON.stringify(now).substr(1, 10)).plus({day: 1}).toISODate()
-                now = curDateISO
-                curDate = JSON.stringify(curDateISO).substr(1, 10)
-            }
-            date.push(curDate)
-
-        }
-
-        j = 0
-
-        let data = {}
-
-        for(let i = 0; i < date.length; i++){
-            if(j === 0){
-                data[date[i]] = {selected: true, selectedColor: 'grey'}
-                j++
-            }else if(j === 1){
-                data[date[i]] = {selected: true, selectedColor: '#e37f68'}
-                j++
-            }else if(j === 2){
-                data[date[i]] = {selected: true, selectedColor: '#68afe3'}
-                j++
-            }else if(j === 3){
-                data[date[i]] = {selected: true, selectedColor: '#6a68e3'}
-                j = 0
-            }
-
-        }
-
-        this.setState({dates: data})
     }
 
     getMonthName = (month) => {
@@ -106,7 +67,140 @@ class MainScreen extends React.Component {
         }
     }
 
+    setCountMonthVisible(count){
+        let date = []
+        let startDate = '2020-08-10'
+        let endDate = JSON.stringify(DateTime.fromISO(JSON.stringify(startDate).substr(1, 10)).plus({month: count}).toISODate()).substr(1, 10)
+        let curDateISO, curDate
+        let j = 0
+        while(curDate !== endDate){
+            if(j === 0){
+                curDate = JSON.stringify(startDate).substr(1, 10)
+                j++
+            }else{
+                curDateISO = DateTime.fromISO(JSON.stringify(startDate).substr(1, 10)).plus({day: 1}).toISODate()
+                startDate = curDateISO
+                curDate = JSON.stringify(curDateISO).substr(1, 10)
+            }
+            date.push(curDate)
+
+        }
+        return date
+    }
+
+    setDates(date){
+        let j = 0
+
+        let data = {}
+
+        for(let i = 0; i < date.length; i++){
+            if(j === 0){
+                data[date[i]] = {selected: true, selectedColor: 'grey'}
+                j++
+            }else if(j === 1){
+                data[date[i]] = {selected: true, selectedColor: '#e37f68'}
+                j++
+            }else if(j === 2){
+                data[date[i]] = {selected: true, selectedColor: '#68afe3'}
+                j++
+            }else if(j === 3){
+                data[date[i]] = {selected: true, selectedColor: '#6a68e3'}
+                j = 0
+            }
+
+        }
+
+        this.setState({dates: data})
+    }
+
+    componentDidMount() {
+        this.setState({countMonth: 15}, () => {
+            this.setDates(this.setCountMonthVisible(15))
+        })
+
+    }
+
+    setEditMode = (value) => {
+        if (value){
+            this.setState({
+                editMode: true,
+                visibleCheckButton: true,
+                visibleResetButton: true
+            })
+        }else{
+            this.setState({
+                editMode: false,
+                visibleCheckButton: false,
+                visibleResetButton: false
+            })
+        }
+    }
+
     render() {
+        const DateScreen = (
+            <View>
+                <Header
+                    leftComponent={ <Icon
+                        name='menu'
+                        type='feather'
+                        color='#fff'
+                        onPress={() => this.props.openDrawer()} />
+                    }
+                    centerComponent={{ text: '2020-11-15', style: { color: '#fff' } }}
+                />
+
+            </View>
+        )
+        const Calendar = (
+            <View>
+            <Header
+                leftComponent={(this.state.visibleResetButton) ? <Icon
+                    name='rotate-ccw'
+                    type='feather'
+                    color='#fff'
+                    onPress={() => this.props.openDrawer()} /> : <Icon
+                    name='menu'
+                    type='feather'
+                    color='#fff'
+                    onPress={() => this.props.openDrawer()} />
+                }
+                centerComponent={{ text: 'РАБОТА', style: { color: '#fff' } }}
+                rightComponent={(this.state.visibleCheckButton) ? <Icon
+                    name='check'
+                    type='feather'
+                    color='#fff'
+                    onPress={() => this.setEditMode(false)} /> : <Icon
+                    name='edit'
+                    type='feather'
+                    color='#fff'
+                    onPress={() => this.setEditMode(true)} />}
+
+            />
+            <CalendarList
+                style={{height: '88%'}}
+                markedDates={this.state.dates}
+                onDayPress={(this.state.editMode) ? (day) => {this.setModalVisible(true, day)} : (day) => {this.setModalVisible(true, day)}}
+                onDayLongPress={(day) => {
+                    this.setModalVisible(true, day)
+                }}
+                pastScrollRange={0}
+                futureScrollRange={this.state.countMonth}
+                scrollEnabled={true}
+                showScrollIndicator={true}
+            />
+            </View>
+        )
+        const visionMode = (
+            <View style={{justifyContent: 'space-between'}}>
+                <TextInput placeholder={"..."} />
+            </View>
+        )
+
+        const editMode = (
+            <View style={{justifyContent: 'space-between'}}>
+                <Text>Dsctiption</Text>
+            </View>
+        )
         return (
             <View>
                 <Modal
@@ -122,49 +216,15 @@ class MainScreen extends React.Component {
                                         {this.state.day + ' ' + this.state.month + ' ' + this.state.year}
                                     </Text>
                                 </View>
-                                <View style={{justifyContent: 'space-between'}}>
-                                    <TextInput placeholder={"..."} />
-                                </View>
+                                {(!this.state.editMode) ? editMode : visionMode}
+                                <Button title={'ОК'} onPress={() => this.setModalVisible(false, {day: '', year: '', month: ''})} />
                             </View>
                         </View>
                     </View>
                 </Modal>
-                <Header
-                    leftComponent={(this.state.visibleResetButton) ? <Icon
-                        name='rotate-ccw'
-                        type='feather'
-                        color='#fff'
-                        onPress={() => this.props.openDrawer()} /> : <Icon
-                        name='menu'
-                        type='feather'
-                        color='#fff'
-                        onPress={() => this.props.openDrawer()} />
-                    }
-                    centerComponent={{ text: 'РАБОТА', style: { color: '#fff' } }}
-                    rightComponent={(this.state.visibleCheckButton) ? <Icon
-                        name='edit'
-                        type='feather'
-                        color='#fff'
-                        onPress={() => console.log("press")} /> : <Icon
-                        name='edit'
-                        type='feather'
-                        color='#fff'
-                        onPress={() => this.props.openDrawer()} />}
-
-                />
-                <CalendarList
-                    style={{height: '88%'}}
-                    markedDates={this.state.dates}
-                    onVisibleMonthsChange={(months) => {console.log('now these months are visible', months)}}
-                    onDayLongPress={(day) => {
-                        this.setModalVisible(true, day)
-                    }}
-                    pastScrollRange={0}
-                    futureScrollRange={this.state.countMonth}
-                    scrollEnabled={true}
-                    showScrollIndicator={true}
-                />
+                {(!this.state.selectedDate) ? Calendar : DateScreen}
             </View>
+
         );
     }
 }
