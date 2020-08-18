@@ -20,8 +20,6 @@ class MainScreen extends React.Component {
             modalVisible: false,
             month: "",
             editMode: false,
-            visibleCheckButton: false,
-            visibleResetButton: false,
             tempDates: [],
             dates: {},
             countMonth: 12,
@@ -114,10 +112,7 @@ class MainScreen extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({countMonth: 15}, () => {
-            this.setDates(this.setCountMonthVisible(15))
-        })
-
+        this.setDates(this.setCountMonthVisible(this.state.countMonth))
     }
 
     setEditMode = (value) => {
@@ -137,68 +132,34 @@ class MainScreen extends React.Component {
     }
 
     render() {
+        const DateScreenView = (
+            <Text>Desctiption</Text>
+        )
+        const DateScreenEdit = (
+            <TextInput />
+        )
         const DateScreen = (
             <View>
-                <Header
-                    leftComponent={ <Icon
-                        name='menu'
-                        type='feather'
-                        color='#fff'
-                        onPress={() => this.props.openDrawer()} />
-                    }
-                    centerComponent={{ text: '2020-11-15', style: { color: '#fff' } }}
-                />
-
+                {(this.state.editMode) ? DateScreenEdit : DateScreenView}
             </View>
         )
         const Calendar = (
-            <View>
-            <Header
-                leftComponent={(this.state.visibleResetButton) ? <Icon
-                    name='rotate-ccw'
-                    type='feather'
-                    color='#fff'
-                    onPress={() => this.props.openDrawer()} /> : <Icon
-                    name='menu'
-                    type='feather'
-                    color='#fff'
-                    onPress={() => this.props.openDrawer()} />
-                }
-                centerComponent={{ text: 'РАБОТА', style: { color: '#fff' } }}
-                rightComponent={(this.state.visibleCheckButton) ? <Icon
-                    name='check'
-                    type='feather'
-                    color='#fff'
-                    onPress={() => this.setEditMode(false)} /> : <Icon
-                    name='edit'
-                    type='feather'
-                    color='#fff'
-                    onPress={() => this.setEditMode(true)} />}
-
-            />
             <CalendarList
-                style={{height: '88%'}}
+                style={{height: '96%'}}
                 markedDates={this.state.dates}
-                onDayPress={(this.state.editMode) ? (day) => {this.setModalVisible(true, day)} : (day) => {this.setModalVisible(true, day)}}
-                onDayLongPress={(day) => {
-                    this.setModalVisible(true, day)
-                }}
+                onDayPress={(this.state.editMode) ? (day) => {this.setModalVisible(true, day)} : (day) => {this.setState({selectedDate: day})}}
                 pastScrollRange={0}
                 futureScrollRange={this.state.countMonth}
                 scrollEnabled={true}
                 showScrollIndicator={true}
             />
-            </View>
-        )
-        const visionMode = (
-            <View style={{justifyContent: 'space-between'}}>
-                <TextInput placeholder={"..."} />
-            </View>
         )
 
         const editMode = (
             <View style={{justifyContent: 'space-between'}}>
-                <Text>Dsctiption</Text>
+                <TextInput placeholder={"заголовок"} />
+                <TextInput multiline={true} numberOfLines={4} placeholder={"описание"} />
+
             </View>
         )
         return (
@@ -216,7 +177,7 @@ class MainScreen extends React.Component {
                                         {this.state.day + ' ' + this.state.month + ' ' + this.state.year}
                                     </Text>
                                 </View>
-                                {(!this.state.editMode) ? editMode : visionMode}
+                                {editMode}
                                 <Button title={'ОК'} onPress={() => this.setModalVisible(false, {day: '', year: '', month: ''})} />
                             </View>
                         </View>

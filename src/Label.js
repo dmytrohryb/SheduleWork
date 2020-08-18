@@ -14,16 +14,16 @@ export class Label extends React.Component{
                 <View style={{marginHorizontal: 5}}/>
                 <View style={{flexDirection: 'row'}}>
                     <TouchableHighlight>
-                        <View style={{width: 240, height: 34, borderWidth: 1, alignItems: 'center', justifyContent: 'center'}}>
+                        <View style={{width: 240, height: 34, borderColor: '#2289dc', backgroundColor: '#dbe6ee', borderWidth: 1, alignItems: 'center', justifyContent: 'center'}}>
                             <Text style={{fontSize: 16}}>{this.props.name}</Text>
                         </View>
                     </TouchableHighlight>
-                    <View style={{marginHorizontal: 5}}/>
+                    <View style={{marginHorizontal: 5, alignItems: 'center'}}/>
                     <Icon
                         size={30}
                         name='trash-2'
                         type='feather'
-                        color='red'
+                        color='#dc4222'
                         onPress={() => console.log("press")} />
                 </View>
                 <View style={{marginHorizontal: 5}}/>
